@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project name="module_jccapilib" default="compile.module.jccapilib">
+  <dirname property="module.jccapilib.basedir" file="${ant.file.module_jccapilib}"/>
+  
+  <property name="module.jdk.home.jccapilib" value="${project.jdk.home}"/>
+  <property name="module.jdk.bin.jccapilib" value="${project.jdk.bin}"/>
+  <property name="module.jdk.classpath.jccapilib" value="${project.jdk.classpath}"/>
+  
+  <property name="compiler.args.jccapilib" value="-encoding UTF-8 -source 8 -target 8 ${compiler.args}"/>
+  
+  <property name="jccapilib.output.dir" value="${module.jccapilib.basedir}/out/production/JCCAPILib"/>
+  <property name="jccapilib.testoutput.dir" value="${module.jccapilib.basedir}/out/test/JCCAPILib"/>
+  
+  <path id="jccapilib.module.bootclasspath">
+    <!-- Paths to be included in compilation bootclasspath -->
+  </path>
+  
+  <path id="jccapilib.module.production.classpath">
+    <path refid="${module.jdk.classpath.jccapilib}"/>
+  </path>
+  
+  <path id="jccapilib.runtime.production.module.classpath">
+    <pathelement location="${jccapilib.output.dir}"/>
+  </path>
+  
+  <path id="jccapilib.module.classpath">
+    <path refid="${module.jdk.classpath.jccapilib}"/>
+    <pathelement location="${jccapilib.output.dir}"/>
+  </path>
+  
+  <path id="jccapilib.runtime.module.classpath">
+    <pathelement location="${jccapilib.testoutput.dir}"/>
+    <pathelement location="${jccapilib.output.dir}"/>
+  </path>
+  
+  
+  <patternset id="excluded.from.module.jccapilib">
+    <patternset refid="ignored.files"/>
+  </patternset>
+  
+  <patternset id="excluded.from.compilation.jccapilib">
+    <patternset refid="excluded.from.module.jccapilib"/>
+  </patternset>
+  
+  <path id="jccapilib.module.sourcepath">
+    <dirset dir="${module.jccapilib.basedir}">
+      <include name="src"/>
+    </dirset>
+  </path>
+  
+  
+  <target name="compile.module.jccapilib" depends="compile.module.jccapilib.production,compile.module.jccapilib.tests" description="Compile module JCCAPILib"/>
+  
+  <target name="compile.module.jccapilib.production" depends="register.custom.compilers" description="Compile module JCCAPILib; production classes">
+    <mkdir dir="${jccapilib.output.dir}"/>
+    <javac2 destdir="${jccapilib.output.dir}" debug="${compiler.debug}" nowarn="${compiler.generate.no.warnings}" memorymaximumsize="${compiler.max.memory}" fork="true" executable="${module.jdk.bin.jccapilib}/javac">
+      <compilerarg line="${compiler.args.jccapilib}"/>
+      <bootclasspath refid="jccapilib.module.bootclasspath"/>
+      <classpath refid="jccapilib.module.production.classpath"/>
+      <src refid="jccapilib.module.sourcepath"/>
+      <patternset refid="excluded.from.compilation.jccapilib"/>
+    </javac2>
+    
+    <copy todir="${jccapilib.output.dir}">
+      <fileset dir="${module.jccapilib.basedir}/src">
+        <patternset refid="compiler.resources"/>
+        <type type="file"/>
+      </fileset>
+    </copy>
+  </target>
+  
+  <target name="compile.module.jccapilib.tests" depends="register.custom.compilers,compile.module.jccapilib.production" description="compile module JCCAPILib; test classes" unless="skip.tests"/>
+  
+  <target name="clean.module.jccapilib" description="cleanup module">
+    <delete dir="${jccapilib.output.dir}"/>
+    <delete dir="${jccapilib.testoutput.dir}"/>
+  </target>
+</project>
